@@ -14,6 +14,7 @@ int main()
 	}
 	double time = omp_get_wtime();
 #pragma omp parallel shared(a,b,c)
+#pragma omp for
 	for (long int i = 0; i < n; i++)
 		{
 			c[i] = a[i] + b[i];

@@ -3,7 +3,7 @@
 int main()
 {
 	printf("Serial block 1\n");
-#pragma omp parallel num_threads(5)
+#pragma omp parallel num_threads(10)
 	{
 		printf("Parallel block\n");
 	}

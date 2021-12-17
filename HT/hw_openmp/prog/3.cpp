@@ -28,7 +28,7 @@ void rand_init_matrix(int** matrix,long int n)
 {
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
-			matrix[i][j] = 1 + rand()% 10;
+			matrix[i][j] = 1 + rand() % 10;
 }
 
 // Matrix zeroing function
@@ -104,43 +104,9 @@ int main(int argc, char* argv[])
 				for (int i = 0; i < N; i++)
 					C[i][j] += A[i][k] * B[k][j];
 		time_matrix[3][threads - 1] = omp_get_wtime() - time;
+		
+		cout << "calculated thread" << threads << endl;
 	}
-	double* without_parallel = new double[4];
-	// Matrix multiplication with cycle order ijk
-	zero_init_matrix(C, N);
-	double time = omp_get_wtime();
-	for (int i = 0; i < N; i++)
-		for (int j = 0; j < N; j++)
-			for (int k = 0; k < N; k++)
-				C[i][j] += A[i][k] * B[k][j];
-	without_parallel[0] = omp_get_wtime() - time;
-
-	// Matrix multiplication with cycle order ikj
-	zero_init_matrix(C, N);
-	time = omp_get_wtime();
-	for (int i = 0; i < N; i++)
-		for (int k = 0; k < N; k++)
-			for (int j = 0; j < N; j++)
-				C[i][j] += A[i][k] * B[k][j];
-	without_parallel[1] = omp_get_wtime() - time;
-		
-	// Matrix multiplication with cycle order jik
-	zero_init_matrix(C, N);
-	time = omp_get_wtime();
-	for (int j = 0; j < N; j++)
-		for (int i = 0; i < N; i++)
-			for (int k = 0; k < N; k++)
-				C[i][j] += A[i][k] * B[k][j];
-	without_parallel[2] = omp_get_wtime() - time;
-		
-	// Matrix multiplication with cycle order jki
-	zero_init_matrix(C, N);
-	time = omp_get_wtime();
-	for (int j = 0; j < N; j++)
-		for (int k = 0; k < N; k++)
-			for (int i = 0; i < N; i++)
-				C[i][j] += A[i][k] * B[k][j];
-	without_parallel[3] = omp_get_wtime() - time;	
 	
 	cout << "-----------------------------------------------time matrix----------------------------------------" << endl; 
 	cout << "           1        2        3        4        5        6        7        8        9        10       " << endl; 
@@ -168,13 +134,6 @@ int main(int argc, char* argv[])
 		}
 		cout << endl;
     }
-	const char *row_parallel[4] = {"ijk(not)", "ikj(not)", "jik(not)", "jki(not)"};
-	cout << "\n---------------------------------------------without parallel----------------------------------" << endl;
-	for (int i = 0; i < 4; i++) 
-	{
-		printf("%s, %f", row_parallel[i], without_parallel[i]);
-		cout << endl;
-	}
 	
 	bool output = false;
 	
@@ -211,10 +170,6 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	
-	
-
-
 	// Freeing memory occupied by matrices A, B, C
 	free_array(A, N);
 	free_array(B, N);

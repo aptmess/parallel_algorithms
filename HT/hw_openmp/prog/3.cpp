@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 		printf("%s | ", row[i]);
 		for (int j = 0; j < 10; j++) 
 		{
-			printf("%.6f ", time_matrix[i][j] / time_matrix[i][9]);
+			printf("%.6f ", time_matrix[i][0] / time_matrix[i][j]);
 		}
 		cout << endl;
     }

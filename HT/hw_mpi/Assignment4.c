@@ -15,8 +15,9 @@ int main(int argc, char* argv[]) {
 		cout << "Start main process " << rank << endl;
 		for (i = 1; i < n; i++) 
 		{
+
 			MPI_Recv(&message[0], 4, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-			cout << "Print numbers from thread " << i << ": "; 
+			cout << "Print numbers from process " << i << ": "; 
 			for (int j = 0; j < 4; j++)
 			{
 				cout << message[j] << ' ';

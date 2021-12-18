@@ -106,7 +106,7 @@ centertags]{article} % относится к классу article и разме�
 		\LARGE FEDERAL STATE AUTONOMOUS EDUCATIONAL INSTITUTION OF HIGHER EDUCATION \\[0.5cm]
 		\Large ITMO UNIVERSITY \\[3cm]
 		\LARGE Report\\
-		\Large OpenMP. Practical tasks No. $1-3$. \\
+		\Large MPI. Assignments $3-5$ \\
 		\Large Parallel algorithms for the analysis and synthesis of data \\[4cm]
 
 
@@ -116,6 +116,8 @@ centertags]{article} % относится к классу article и разме�
 		J4133c\\
 		Accepted by\\
 		Petr Andriushchenko
+
+		Deadline: 19.12.21
 		\end{flushright}
 
 		\vfill 
@@ -182,13 +184,140 @@ Let's move to the the code and explain how it works.
 	\item Line 8 - getting rank of the process (\textit{rank} variable)
 	\item Line 10 - \textsc{if} statement
 	\begin{itemize}
-		\item \textsc{if rank == 0} - then we are printing 'Hello from process 0' and in range $i=[1..10]$ where $i$ is number of process, waiting for incoming messages from any source (who is quicklier will be write earlier) with any tag using syntax of function \textsc{MPI\_Send}. The information 'Hello from process \%message' is printing after we get message on each iteration of cycle.
+		\item \textsc{if rank == 0} - then we are printing 'Hello from process 0' and in range $i=[1..n]$ where $i$ is number of process, waiting for incoming messages from any source (who is quicklier will be write earlier) with any tag using syntax of function \textsc{MPI\_Send}. The information 'Hello from process \%message' is printing after we get message on each iteration of cycle.
 		\item else - from processes with rank not $0$ sending messages to process with rank $0$. The message contains information about processes's rank.
 	\end{itemize}
 	\item Line 19 - Ending parallel part
 \end{enumerate}
 
 I have analysed the first code with mpi, explain how it works, compile it and show results.
+
+\newpage
+\subsection{Assignment 4.}
+
+\subsubsection{Formulation of the problem}
+
+\begin{enumerate}
+	\item Convert the code \textsc{Assignment4.c} to match your individual version of the assignment.
+	\item My task according to the \href{https://docs.google.com/spreadsheets/d/1m2KqmSc5pMMQ9JezZGybnuKG75FywUcs8gbPuMvVUxc/edit#gid=1272007391}{table} is $27$.
+	\item If the number of processes in the task is not defined, then we can assume that this number does not exceed 8. \item The \textit{main process} is understood as a process of rank $0$ for the communicator \textsc{MPI\_COMM\_WORLD}. \item For all processes of nonzero rank in the tasks, the common name of the subordinate processes is used. 
+	\item If the task does not define the maximum size of a set of numbers, then it should be considered equal to 10.
+\end{enumerate}
+
+\textbf{Variant $27$}:
+
+\begin{enumerate}
+	\item Each subprocess is given four integers. 
+	\item Send these numbers to the main process using one call to the \textsc{MPI\_Send} function for each sending process, and display them in the main process. 
+	\item The resulting numbers should be displayed in ascending order of the ranks of the processes that sent them.
+\end{enumerate}
+
+
+\subsubsection{Example of launch parameters and output. Detailed description of solution}
+
+Code for \textbf{assignment 4} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment4.c}{here}.
+
+Compilation example: \textsc{mpic++ -o ./cpf/4.o Assignment4.c}
+
+Launch example:\textsc{mpirun --oversubscribe -np 8 ./cpf/4.o} (have a problem without \textsc{--oversubscribe} option.
+
+\begin{center}
+\includegraphics[scale=0.55]{4.1.png}
+
+Works correctly - four integers in each subprocess was send to main process and displayed in ascending order of the ranks
+\end{center}
+
+Let's move to the the code and explain how it works.
+
+\begin{center}
+		\includegraphics[scale=0.75]{4.code.png}
+
+		Assignment4 code
+\end{center}
+
+\begin{enumerate}
+	\item Line 7 - \textsc{MPI\_Init} - initialisation, starting the parallel part with arguments of main function;
+	\item Line 8 - initialize variables, especially \textit{rank} for rank of process and \textit{n} for amount of process
+	\item Line 9 - initializing int array of size 4 for input messages from subprocesses;
+	\item Line 10 - creating \textsc{MPI\_status}, variable status contains three attibutes of message:
+	\begin{itemize}
+		\item \textsc{MPI\_source} - number of the sending process;
+		\item \textsc{MPI\_tag} - name of text message, identifier;
+		\item \textsc{MPI\_error} - error code.
+	\end{itemize}
+	\item Line 11 - getting number of processes (\textit{n} varialbe)
+	\item Line 12 - getting rank of the process (\textit{rank} variable)
+	\item Line 13 - \textsc{if} statement
+	\begin{itemize}
+		\item \textsc{if rank == 0} - then we are printing 'Start main process 0' and in range $i=[1..n]$ where $i$ is number of process, waiting for incoming messages from each $i$ source (from $1$ to $n$) with any tag using syntax of function \textsc{MPI\_Send}. When message is recieved, the array of $5$ integers is displayed in process 0 from process $i$ - first $4$ is integers that we need to display and the last - rank of process (something like check that program works correctly). Using this algrotihm we print results of process in ascending order of the ranks.
+		\item else - from processes with rank not $0$ sending messages to process with rank $0$. Generate int array of size $5$ with different number for each process using line $29$ - first $4$ elements are random integers from 1to 20 and the last is rank of process. The message contains information about generated array using interface \textsc{MPI\_send} - start with first element of array \textsc{sending}, $4$ elements of size int to process $0$.
+	\end{itemize}
+	\item Line 19 - Ending parallel part
+\end{enumerate}
+
+I have implemented an algorithm from task and display results of processes in ascending order.
+
+\newpage
+\subsection{Assignment 5.}
+
+\subsubsection{Formulation of the problem}
+
+\begin{enumerate}
+	\item Compile and run \textsc{Assignment5.c} program.
+	\item Explain in detail how it works.
+	\item Determine the execution time of the program from the previous task.
+\end{enumerate}
+
+Task from previous lab: variant $27$.
+
+\subsubsection{Example of launch parameters and output. Detailed description of solution}
+
+\paragraph{Part I. Explain Assignment 5.c}
+
+$\$
+
+Code for \textbf{assignment 5} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment5.c}{here}.
+
+Compilation example: \textsc{mpic++ -o ./cpf/5.o Assignment5.c}
+
+Launch example:\textsc{mpirun --oversubscribe -np 8 ./cpf/5.o} (have a problem without \textsc{--oversubscribe} option.
+
+\begin{center}
+\includegraphics[scale=0.55]{5.1.png}
+\end{center}
+
+Let's move to the the code and explain how it works.
+
+\begin{center}
+		\includegraphics[scale=0.75]{5.1.code.png}
+
+		Assignment5 code
+\end{center}
+
+The main purpose of the problem is to count average time consumption of every process. This program takes as an input parameter an amount of processes, for \textsc{NTIMES} run the program and count the average time of each process works, also the processor and the rank of process is displayed.
+
+\paragraph{Part II. Determine the execution time of the program from the previous task}
+
+$\ $
+
+Code for \textbf{assignment 5 partII} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/5.1.c}{here}.
+
+Compilation example: \textsc{mpic++ -o ./cpf/5.1.o 5.1.c}
+
+Launch example:\textsc{mpirun --oversubscribe -np 8 ./cpf/5.1.o} (have a problem without \textsc{--oversubscribe} option.
+
+\begin{center}
+\includegraphics[scale=0.55]{5.2.png}
+\end{center}
+
+Let's move to the the code and explain how it works.
+
+\begin{center}
+\includegraphics[scale=0.7]{5.2.code.png}
+Assignment5 part II code
+\end{center}
+
+I've implemented counting working time of each process as it was implemented in \textsc{Assignment5.c}. As we expected, the working time of process $0$ is the biggiest, because main process waiting for other processes's results.
 
 
 

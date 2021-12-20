@@ -188,6 +188,8 @@ Let's move to the the code and explain how it works.
 Assignment 10
 \end{center}
 
+The overall goal of the program is that all processes exchange messages with their nearest neighbors (on the left - previous, on the right - next) in accordance with the topology of the ring. Witg \textsc{MPI\_Waitall} the execution of the process is blocked until all exchange operations on the specified \textsc{reqs} identifiers (lines 18-21) are completed and if the error exists in this operations, then the error field in the \textsc{stats} array elements will be set to the appropriate value. In lines $18-21$ there are operations \textsc{MPI\_Irecv} and \textsc{MPI\_Isend} which are equal to previous functions \textsc{MPI\_Recv} and \textsc{MPI\_Send} but in this functions the return from the function occurs immediately after the initialization of the receiving/transmitting process without waiting for the receipt/ processing of the entire message, so we can solve the problem with blocking operations in \textsc{MPI\_Send} and \textsc{MPI\_Recv}. In this lines the process waiting for their neareset neighbours and save information in int array \textsc{buf} and send information about yourself's rank to previous and next. The result is displayed on screens - ring topology works.
+
 
 
 \subsection{Appendix}

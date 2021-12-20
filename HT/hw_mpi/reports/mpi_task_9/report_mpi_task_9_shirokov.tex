@@ -133,97 +133,70 @@ centertags]{article} % относится к классу article и разме�
 
 \section{Assignments}
 
-\subsection{Assignment 10. MPI. Sending and receiving messages without blocking. Ring exchange using non-blocking operations.}
+\subsection{Assignment 9. MPI. MPI\_Reduce.}
 
 \subsubsection{Formulation of the problem}
 
-Complete the program \textsc{Assignment10.c.} Compile and run it.
-
-Study the code carefully and explain how it works.
-
-\subsubsection{Example of launch parameters and output. Detailed description of solution}
-
-Code for \textbf{assignment 10} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment10.c}{here}.
-
-Compilation example: \textsc{mpic++ -o ./cpf/10.o Assignment10.c}
-
-Launch example: \textsc{mpirun --oversubscribe -np 10 ./cpf/10.o}
+\begin{enumerate}
+	\item Write an MPI program in which the global vector addition operation is modeled by a 
+doubling (cascade) scheme using point-to-point data transfers.
+	\item Compare the execution time of such a simulation using the \textsc{MPI\_Reduce} procedure on as many processes as possible. Each process stores an array of $1,000,000$ elements equal to $1$.
+\end{enumerate}
 
 \begin{center}
-\includegraphics[scale=0.5]{10.png}
+\includegraphics[scale=0.75]{9.double.png}
 \end{center}
 
-Let's move to the the code and explain how it works.
+\textbf{MPI\_Reduce}
 
-\begin{center}
-\includegraphics[scale=0.75]{10.code.png}
-
-Assignment 10
-\end{center}
-
-The overall goal of the program is that all processes exchange messages with their nearest neighbors (on the left - previous, on the right - next) in accordance with the topology of the ring. Witg \textsc{MPI\_Waitall} the execution of the process is blocked until all exchange operations on the specified \textsc{reqs} identifiers (lines 18-21) are completed and if the error exists in this operations, then the error field in the \textsc{stats} array elements will be set to the appropriate value. In lines $18-21$ there are operations \textsc{MPI\_Irecv} and \textsc{MPI\_Isend} which are equal to previous functions \textsc{MPI\_Recv} and \textsc{MPI\_Send} but in this functions the return from the function occurs immediately after the initialization of the receiving/transmitting process without waiting for the receipt/ processing of the entire message, so we can solve the problem with blocking operations in \textsc{MPI\_Send} and \textsc{MPI\_Recv}. In this lines the process waiting for their neareset neighbours and save information in int array \textsc{buf} and send information about yourself's rank to previous and next. The result is displayed on screens - ring topology works.
-
-\newpage
-\subsection{Assignment 11.MPI. Combined reception and transmission of messages.}
-
-\subsubsection{Formulation of the problem}
-
-Based on \textsc{Assignment 10}, write a program for ring topology exchange using the \textbf{MPI\_Sendrecv()} function.
-
-In situations where you need to exchange data between processes, it is safer to use the overlaid 
-\textbf{MPI\_Sendrecv} operation. The \textbf{MPI\_Sendrecv} function combines the execution of the send and receive 
-operations. Both operations use the same communicator, but message IDs may differ. The location of the 
-received and transmitted data in the address space of the process should not overlap. The data sent can be 
-of different types and lengths.
-
-In cases when it is necessary to exchange data of the same type with replacement of the sent data with the 
-received ones, it is more convenient to use the \textbf{MPI\_Sendrecv\_replace} function. In this operation, the data 
-sent from the buf array is replaced with the received data.
-
-The special address \textbf{MPI\_PROC\_NULL} can be used for source and dest in data transfer operations. 
-Communication operations with such an address do nothing. The use of this address is convenient instead of 
-using logical constructs to analyze the conditions to send / read a message or not.
+The \textsc{MPI\_Reduce} function concatenates the input buffer entries of each process in a group 
+using the \textbf{op} operation and returns the concatenated value to the root process's output 
+buffer.
 
 
-int \textbf{MPI\_Sendrecv} (
+int \textbf{MPI\_Reduce} (
 \begin{itemize}
-	\item void *\textbf{sendbuf} - the address of the data to be sent
-	\item int \textbf{sendcount} - the number of sent variables
-	\item MPI\_Datatype \textbf{sendtype} - the type of data being sent
-	\item int \textbf{dest} - destination rank
-	\item int \textbf{sendtag} - the tag of the sent message
-	\item void *recvbuf
-	\item int \textbf{recvcount} - is the number of received data
-	\item MPI\_Datatype \textbf{recvtype} - the type of data being received
-	\item int \textbf{source} - from whom the message is received
-	\item int \textbf{recvtag} - received message tag
-	\item MPI\_Comm \textbf{comm} - MPI\_Comm comm
-	\item MPI\_Status *\textbf{status} - status
-
+	\item IN void *\textbf{sendbuf} - address of the beginning of the input buffer;
+	\item OUT void *\textbf{recvbuf} - address of the beginning of the result buffer (used only in the receiving 
+process root);
+	\item IN int \textbf{count} - the number of elements in the input buffer;
+	\item IN MPI\_Datatype \textbf{sendtype} - the type of elements in the input buffer;
+	\item IN MPI\_Op \textbf{op} - the operation by which the reduction is performed;
+	\item IN int \textbf{root} - number of the receiving process of the operation result;
+	\item IN MPI\_Comm \textbf{comm} - communicator
 \end{itemize}
 )
 
 \subsubsection{Example of launch parameters and output. Detailed description of solution}
 
-Code for \textbf{assignment 11} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment11.c}{here}.
+Code for \textbf{assignment 9} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment9.c}{here}.
 
-Compilation example: \textsc{mpic++ -o ./cpf/11.o Assignment11.c}
+Compilation example: \textsc{mpic++ -o ./cpf/9.o Assignment9.c}
 
-Launch example: \textsc{mpirun --oversubscribe -np 11 ./cpf/11.o}
+Launch example, there are two options: 
+\begin{enumerate}
+	\item \textsc{mpirun --oversubscribe -np 16 ./cpf/9.o 100000000 double}
+	\item \textsc{mpirun --oversubscribe -np 16 ./cpf/9.o 100000000 reduce}
+\end{enumerate}
 
 \begin{center}
-\includegraphics[scale=0.5]{11.png}
+\includegraphics[scale=0.48]{9.png}
+
+Results
 \end{center}
 
 Let's move to the the code and explain how it works.
 
-\begin{center}
-\includegraphics[scale=0.75]{11.code.png}
+\begin{figure}[h!]
+\centering
+\subfigure{\includegraphics[width=0.47\textwidth]{9.1.code.png}} 
+\subfigure{\includegraphics[width=0.5\textwidth]{9.2.code.png}} 
 
-Assignment 11
-\end{center}
+Assignment9 code
+\end{figure}
 
-The main goal of program is the same as in Assignment 10 and the resuls is equally the same, but in assignment 11 we are using function \textbf{MPI\_Sendrecv()} due to syntax in previous subsection which is sending and try to recieive message in the same function. On line $17$ this function process sends a message with current process's rank to next neareast process and recieve rank of the previous nearest process. On the line $18$ on the contrary - sends a message with rank to previous nearest process and try to recieve rank from nearest next process. The program works correctly.
+In this code there are two functions base functions - \textsc{parallel\_sum\_reduce} and \textsc{parallel\_sum\_doubling}. In first function we are for each process and for their part of input array compute sum and send the result to toor process using syntax of \textsc{MPI\_Reduce}, in \textsc{parallel\_sum\_doubling} function we are splitting our workers as a tree (amount of processes should be a degree of $2$ because of implemenation condition). After that if there are a way to split worker to more workers less than amount of processes we are splitting and waiting for result of each child process, else we are sending sum - the structure as on picture in the previous subsection. In main functions we initialise array of ones, with function \textsc{MPI\_Scatter} send for each process their own part of array and depending on input parameter counting the sum. After some expereiements I mentioned that reduce operation worke quicklier than doubling (as we can see in picture \textsc{Results}).
+
 
 
 \subsection{Appendix}

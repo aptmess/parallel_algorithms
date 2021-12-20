@@ -1,0 +1,10 @@
+\babel@toc {english}{}
+\babel@toc {english}{}
+\contentsline {section}{\numberline {1}Assignments}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Assignment 10. MPI. Sending and receiving messages without blocking. Ring exchange using non-blocking operations.}{2}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}Formulation of the problem}{2}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}Example of launch parameters and output. Detailed description of solution}{2}{subsubsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.2}Assignment 11.MPI. Combined reception and transmission of messages.}{4}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Formulation of the problem}{4}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Example of launch parameters and output. Detailed description of solution}{5}{subsubsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.3}Appendix}{5}{subsection.1.3}%

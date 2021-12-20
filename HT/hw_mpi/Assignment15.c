@@ -1,4 +1,8 @@
 #include "mpi.h"
+#include <iostream>
+
+using namespace std;
+
 int main(int argc, char **argv)
 {
 	int rank, size, i, rbuf;
@@ -20,6 +24,11 @@ int main(int argc, char **argv)
 	MPI_Group_rank(new_group, &new_rank);
 	
 	//Display values: "rank =, newrank =, rbuf ="
+
+	cout << "process old rank=" << rank ;
+	cout << ", newrank=" << new_rank;
+	cout << ", rbuf=" << rbuf;
+	cout << '\n' << endl;
 	
 	MPI_Finalize();
 }

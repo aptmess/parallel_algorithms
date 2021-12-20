@@ -106,7 +106,7 @@ centertags]{article} % относится к классу article и разме�
 		\LARGE FEDERAL STATE AUTONOMOUS EDUCATIONAL INSTITUTION OF HIGHER EDUCATION \\[0.5cm]
 		\Large ITMO UNIVERSITY \\[3cm]
 		\LARGE Report\\
-		\Large MPI. Assignments $8$ \\
+		\Large MPI. Assignments $14-15$ \\
 		\Large Parallel algorithms for the analysis and synthesis of data \\[4cm]
 
 
@@ -117,7 +117,7 @@ centertags]{article} % относится к классу article и разме�
 		Accepted by\\
 		Petr Andriushchenko
 
-		Deadline: 20.12.21
+		Deadline: 23.12.21
 		\end{flushright}
 
 		\vfill 
@@ -133,83 +133,131 @@ centertags]{article} % относится к классу article и разме�
 
 \section{Assignments}
 
-\subsection{Assignment 8. MPI.  Bandwidth measurement.}
+\subsection{Assignment 14. MPI. Custom global operations. Custom global function.}
 
 \subsubsection{Formulation of the problem}
 
-\begin{enumerate}
-	\item Write an MPI program in which two processes exchange messages
-	\item Measure the time 
-per exchange iteration
-	\item Determine the dependence of the exchange time on the 
-message length.
-	\item Determine the latency and maximum achievable bandwidth of the 
-communication network.
-	\item Print the message length in bytes and the throughput in 
-MB/s to the console.
-	\item Change the length of the message in a loop starting from $1$ element and increase to $1,000,000$ elements, increasing by $10$ times at each iteration.
-\end{enumerate}
+Understand the new functions in \textsc{Assignment14.c}.
 
-\subsubsection{Bandwidth measurement technique}
-
-The following technique is used to measure point-to-point bandwidth. Process $0$ sends a message of length $L$ bytes to process $1$.
-
-$$L = \operatorname{number \ of \ elements} \cdot \operatorname{length \ in \ bytes \ of \  data \ type}$$
-$$L = 100 \cdot \operatorname{sizeof}(int)$$
-
-Process $1$, having received a message from process $0$, sends it a reply message ot the same length. Blocking MPI calls are used (\textsc{MPI\_Send}, \textsc{MPI\_Recv}). These actions are repeated $N=10$ times in order to minimize the error due to averaging. Process $0$ measures the time $T$ taken for all these exchanges.
-
-The bandwidth $R$ is determined by formula:
-
-$$R = \frac{2NL}{T}$$
-
-\subsubsection{Latency measurement technique}
-
-Latency is measured as the time it takes to transmit a signal or message of zero 
-length. At the same time, to reduce the influence of the error and low resolution of 
-the system timer, it is important to repeat the operation of sending a signal and 
-receiving a response a large number of times.
-
-Thus, if the time for $N$ iterations of sending zero-length messages back and forth was $T$ sec., Then the latency is 
-measured as:
-
-$$s = \frac{T}{2N}$$
+Create your own global function for finding the maximum element, compare the correctness of execution with the \textsc{MPI\_MAX} operation in the \textsc{MPI\_Reduce()} function
 
 \subsubsection{Example of launch parameters and output. Detailed description of solution}
 
-Code for \textbf{assignment 6} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment8.c}{here}.
+Code for \textbf{assignment 14} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment14.c}{here}.
 
-Compilation example: \textsc{mpic++ -o ./cpf/8.o Assignment8.c}
+Compilation example: \textsc{mpic++ -o ./cpf/14.o Assignment14.c}
 
-Launch example: \textsc{mpirun --oversubscribe -np 2 ./cpf/8.o}
+Launch example: \textsc{mpirun --oversubscribe -np 7 ./cpf/14.o}
 
 \begin{center}
-\includegraphics[scale=0.75]{8.png}
+\includegraphics[scale=0.55]{14.png}
 \end{center}
 
 Let's move to the the code and explain how it works.
 
-\begin{figure}[h!]
-\centering
-\subfigure{\includegraphics[width=0.47\textwidth]{8.1.code.png}} 
-\subfigure{\includegraphics[width=0.5\textwidth]{8.2.code.png}} 
+\begin{center}
+\includegraphics[scale=1.02]{14.code.png}
 
-Assignment8 code
-\end{figure}
+Assignment14 code
+\end{center}
 
-In the code there are on function \textsc{FactoryMessage}, that start \textsc{MPI\_Send} or \textsc{MPI\_Recv} function depends on input parameter \textit{variant}, after that there are a computation of metrics such as average time in seconds, latency and bandwidth by formulas in previous subsections and printing the result. In main function process $0$ send array of different length on each iteration of for cycle to process $1$, process $1$ then recieves it and send to process $0$ and it is continue for cycle $\operatorname{len}=[1..1000000]$ by increasing it $10$ times in each iteration. 
+Firstly let's explain how this work code and after that will write the second part of the task. The idea of this program is to show hot to implement user-defined global function for some operations from class \textsc{MPI\_Op}. For each process there is an initialization of array $a$by formula $a[i] = i + rank + 1, i = [1..n]$  where \textsc{rank} is rank of the process and $n$ is amount of processes. For example for $7$ processes $a[0]$ for all processes is $[1..7]$. After that with operation \textsc{MPI\_Op\_create} which allows to create \textsc{MPI\_Op} operation that can be used in reduction operations from an user-defined function and with second parameter $1$ indicatesthat user-defined functon passed is communicative - in our example this function's name is \textsc{smod5} (lines $5-9$). This user-defined function should have such parameters as:
 
-We can also check if results are more or less correct - I tried to compare latency from \href{https:\//www.intel.com/content/www/us/en/high-performance-computing-fabrics/omni-path-architecture-performance-overview.html}{intel} comparison and it is more or less the same as in our experiement!
+\begin{itemize}
+	\item void \textbf{inputBuffer} - A pointer on the buffer providing the inputs of an MPI process. In our example the variable name is $a$;
+	\item void \textbf{outputBuffer} - A pointer on the buffer in which write the reduction results. In our example the variable name is $b$;
+	\item int \textbf{len} -  The number of elements on which the reduction applies, amount of processes. In our example the variable name is $l$;
+	\item MPI\_Datatype* datatype - the datatype of output function
+\end{itemize}
 
-\begin{figure}[h!]
-\centering
-\subfigure{\includegraphics[width=0.6\textwidth]{8.1.lat.png}} 
-\subfigure{\includegraphics[width=0.4\textwidth]{8.latency.png}} 
+Our function \textsc{smod5} implemented a logic - return an residual of sum of elements divided by 5. After that in line $23$ we are using this written function as a reduce function and in the next line function \textsc{MPI\_Op\_free} deallocates an operation handle created with \textsc{MPI\_Op\_create}. As an output in line $25$ we are showing result, which is storted in array $b$. Check if result if correct: $(1 + \ldots + 7) \% 5 = 28 \% 5 = 3$ - as our program shows.
 
-Experiement by Intel of MPI latency and our - looks similar
-\end{figure}
+Let's implement a function for finding a maximum.
 
-We have explained the code in assignment 8 and compare the results.
+Code for \textbf{assignment 14 with maximum function} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment14.1.c}{here}.
+
+Compilation example: \textsc{mpic++ -o ./cpf/14.1.o Assignment14.1.c}
+
+Launch example: \textsc{mpirun --oversubscribe -np 7 ./cpf/14.1.o}
+
+\begin{center}
+\includegraphics[scale=0.55]{14.1.png}
+\end{center}
+
+Let's move to the the code and explain how it works.
+
+\begin{center}
+\includegraphics[scale=1]{14.1.code.png}
+
+Assignment14 code
+\end{center}
+
+I have implemented function maximum with simple logic for finding maximum (lines $8-13$). At lines $31-53$ i have implemented checking that results of my function is the same as using defined function \textsc{MPI\_MAX} - if every piece of arrays $b$ is equal to appropriate value $b\_check$ then the message that results are correct is displayed, else - that results isn't correct, but it is not our way - our results are correct! The program works correctly.
+
+
+
+
+
+\newpage
+\subsection{Assignment 15. MPI. Operations with communicators. Partitioning the communicator.}
+
+\subsubsection{Formulation of the problem}
+
+Understand the new functions in \textsc{Assignment15.c}.
+
+Append part of code.
+
+\subsubsection{Example of launch parameters and output. Detailed description of solution}
+
+Code for \textbf{assignment 15} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment15.c}{here}.
+
+Compilation example: \textsc{mpic++ -o ./cpf/15.o Assignment15.c}
+
+Launch example: \textsc{mpirun --oversubscribe -np 5 ./cpf/15.o}
+
+Let's move to the the code and explain how it works.
+
+\begin{center}
+\includegraphics[scale=0.87]{15.code.png}
+
+Assignment15 code
+\end{center}
+
+There are some new function in this code. First is \textsc{MPI\_Comm\_group} which accesses the group associated with given communicator, after that there are initialization of array ranks only for $i = \frac{size}{2}$ where $size$ is amount of processes. After that there are functions:
+
+\begin{enumerate}
+	\item \textsc{MPI\_Group\_incl} -  (
+	\begin{itemize}
+		\item IN - MPI\_Group \textbf{group} - group
+		\item IN - int \textbf{n} - number of elements in array ranks (and size of newgroup) (integer)
+		\item IN - const int \textbf{ranks[]} - ranks of processes in group to appear in newgroup (array of integers)
+		\item OUT - MPI\_Group * \textbf{newgroup} - new group derived from above, in the order defined by ranks
+	\end{itemize}
+	)
+	\item \textsc{MPI\_Group\_excl} - Produces a group by reordering an existing group and taking only unlisted members
+	(
+	\begin{itemize}
+		\item IN - MPI\_Group \textbf{group} - group
+		\item IN - int \textbf{n} - number of elements in array ranks (integer)
+		\item IN - const int \textbf{ranks[]} - array of integer ranks in group not to appear in newgroup
+		\item OUT - MPI\_Group * \textbf{newgroup} - new group derived from above, preserving the order defined by group
+	\end{itemize}
+	)
+\end{enumerate}
+
+In our code it means that all processes with this functions are splitted into two groups depend on their's rank - less than $\frac{size}{2}$ goes to the \textsc{new\_group}, more - to the second existing \textsc{group}. For \textsc{new\_group} the new communcator with function \textsc{MPI\_Comm\_create} is creating and after that using function \textsc{MPI\_Allreduce} which combines values from all processes and distributes the result back to all processes - returns sum of rank for \textsc{new\_group} and this rank is written in variable \textsc{new\_rank} as a new rank using function \textsc{MPI\_Group\_rank}. As a results we are displaying information abour rank if process, new rank of process and rbuf as a results of function \textsc{MPI\_Allreduce}.
+
+Let's see an example. Let amount of process be $5$. Then processes of ranks $0, 1$ goes to group \textsc{new\_group} and others are in \textsc{group}. \textsc{rbuf} is a sum of ranks for each group, so for first \textsc{group} it would be $\operatorname{rbuf}=0+1=1$ and for \textsc{new\_group} the result is $\operatorname{rbuf}=2+3+4=9$. \textsc{new\_rank} is new ranks for group \textsc{new\_group}, so the processes with previous ranks $3, 4, 5$ maps appropriate to $0, 1, 2$ in \textsc{new\_group}. For first group ranks are the same.
+
+The results of example are on picture below
+
+\begin{center}
+\includegraphics[scale=0.55]{15.png}
+
+Results
+\end{center}
+
+The program works correctly!
 
 \subsection{Appendix}
 

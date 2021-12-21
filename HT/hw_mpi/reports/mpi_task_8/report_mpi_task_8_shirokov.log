@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.7) (preloaded format=pdflatex 2020.9.7)  19 DEC 2021 22:35
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.7) (preloaded format=pdflatex 2020.9.7)  21 DEC 2021 16:22
 entering extended mode
 **//wsl$/Ubuntu-20.04/home/aptmess/ITMO/parallel_algorithms/HT/hw_mpi/reports/m
 pi_task_8/report_mpi_task_8_shirokov.tex
@@ -1105,11 +1105,11 @@ been already used, duplicate ignored
                    \relax 
 l.131 \newpage
                [1] [2]
-<./images/8.png, id=66, 636.87938pt x 301.8778pt>
-File: ./images/8.png Graphic file (type png)
-<use ./images/8.png>
-Package pdftex.def Info: ./images/8.png  used on input line 187.
-(pdftex.def)             Requested size: 477.65836pt x 226.40779pt.
+<./images/8.3.png, id=66, 947.79094pt x 390.70969pt>
+File: ./images/8.3.png Graphic file (type png)
+<use ./images/8.3.png>
+Package pdftex.def Info: ./images/8.3.png  used on input line 187.
+(pdftex.def)             Requested size: 473.89432pt x 195.35435pt.
 <./images/8.1.code.png, id=68, 428.35031pt x 472.01344pt>
 File: ./images/8.1.code.png Graphic file (type png)
 <use ./images/8.1.code.png>
@@ -1120,13 +1120,13 @@ File: ./images/8.2.code.png Graphic file (type png)
 <use ./images/8.2.code.png>
 Package pdftex.def Info: ./images/8.2.code.png  used on input line 195.
 (pdftex.def)             Requested size: 250.24199pt x 258.86021pt.
- [3 <./images/8.png> <./images/8.1.code.png> <./images/8.2.code.png>]
-<./images/8.1.lat.png, id=80, 590.205pt x 371.13657pt>
+ [3 <./images/8.3.png> <./images/8.1.code.png> <./images/8.2.code.png>]
+<./images/8.1.lat.png, id=81, 590.205pt x 371.13657pt>
 File: ./images/8.1.lat.png Graphic file (type png)
 <use ./images/8.1.lat.png>
 Package pdftex.def Info: ./images/8.1.lat.png  used on input line 206.
 (pdftex.def)             Requested size: 300.29344pt x 188.83542pt.
-<./images/8.latency.png, id=81, 341.77687pt x 330.48468pt>
+<./images/8.latency.png, id=82, 341.77687pt x 330.48468pt>
 File: ./images/8.latency.png Graphic file (type png)
 <use ./images/8.latency.png>
 Package pdftex.def Info: ./images/8.latency.png  used on input line 207.
@@ -1145,7 +1145,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 219.
  ) 
 Here is how much of TeX's memory you used:
  33756 strings out of 481161
- 762712 string characters out of 2901919
+ 762724 string characters out of 2901919
  1355207 words of memory out of 3000000
  48774 multiletter control sequences out of 15000+200000
  543555 words of font info for 61 fonts, out of 3000000 for 9000
@@ -1160,7 +1160,7 @@ ocal/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/shi
 ro/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
 <C:/Users/shiro/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/c
 m/cmti12.pfb>
-Output written on report_mpi_task_8_shirokov.pdf (5 pages, 277540 bytes).
+Output written on report_mpi_task_8_shirokov.pdf (5 pages, 289838 bytes).
 PDF statistics:
  121 PDF objects out of 1000 (max. 8388607)
  22 named destinations out of 1000 (max. 500000)

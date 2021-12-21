@@ -30,16 +30,16 @@ void FactoryMessage(
 		}
 	end_time = MPI_Wtime();
 
-	T = (end_time - start_time) * 1000000;
+	T = (end_time - start_time);
 	R = 2 * L * N / T / 1024 / 1024;
-	s = T / 2 / N;
+	s = T / 2 / N * 1000000;
 
 	if (variant == "send")
 	{
 		cout << "rank=" << (to_home_sent ^ 1);
 		cout << " len=" << len;
 		cout << " L(bytes)=" << L;
-		cout << " T(us)=" << T;
+		cout << " T(us)=" << T * 1000000;
 		cout << " R[bandwidth](MB/s)=" << R;
 		cout << " s[latency](us)=" << s;
 		cout << '\n' << endl; 

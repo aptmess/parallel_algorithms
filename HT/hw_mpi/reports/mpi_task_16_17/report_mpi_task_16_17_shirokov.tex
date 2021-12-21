@@ -106,7 +106,7 @@ centertags]{article} % относится к классу article и разме�
 		\LARGE FEDERAL STATE AUTONOMOUS EDUCATIONAL INSTITUTION OF HIGHER EDUCATION \\[0.5cm]
 		\Large ITMO UNIVERSITY \\[3cm]
 		\LARGE Report\\
-		\Large MPI. Assignments $8$ \\
+		\Large MPI. Assignments $16-17$ \\
 		\Large Parallel algorithms for the analysis and synthesis of data \\[4cm]
 
 
@@ -117,7 +117,7 @@ centertags]{article} % относится к классу article и разме�
 		Accepted by\\
 		Petr Andriushchenko
 
-		Deadline: 20.12.21
+		Deadline: 24.12.21
 		\end{flushright}
 
 		\vfill 
@@ -133,86 +133,114 @@ centertags]{article} % относится к классу article и разме�
 
 \section{Assignments}
 
-\subsection{Assignment 8. MPI.  Bandwidth measurement.}
+\subsection{Assignment 16. MPI. Operations with communicators. Renumbering processes.}
 
 \subsubsection{Formulation of the problem}
 
-\begin{enumerate}
-	\item Write an MPI program in which two processes exchange messages
-	\item Measure the time 
-per exchange iteration
-	\item Determine the dependence of the exchange time on the 
-message length.
-	\item Determine the latency and maximum achievable bandwidth of the 
-communication network.
-	\item Print the message length in bytes and the throughput in 
-MB/s to the console.
-	\item Change the length of the message in a loop starting from $1$ element and increase to $1,000,000$ elements, increasing by $10$ times at each iteration.
-\end{enumerate}
+In the \textsc{MPI\_Comm\_split} function (\textsc{Assignment16.c}), replace the color parameter with (rank\% 2), (rank\% 3), 
+look at how many groups the processes are split into, depending on the specified attribute of division into 
+groups.
 
-\subsubsection{Bandwidth measurement technique}
+int \textbf{MPI\_Comm\_split} (
+\begin{itemize}
+	\item IN MPI\_Comm \textbf{comm} - parent communicator
+	\item IN int \textbf{color} - a sign of division into groups
+	\item IN int \textbf{key} - parameter defining numbering in new groups
+	\item OUT MPI\_Comm *\textbf{newcomm} - new communicator
+\end{itemize}
+)
 
-The following technique is used to measure point-to-point bandwidth. Process $0$ sends a message of length $L$ bytes to process $1$.
-
-$$L = \operatorname{number \ of \ elements} \cdot \operatorname{length \ in \ bytes \ of \  data \ type}$$
-$$L = 100 \cdot \operatorname{sizeof}(int)$$
-
-Process $1$, having received a message from process $0$, sends it a reply message ot the same length. Blocking MPI calls are used (\textsc{MPI\_Send}, \textsc{MPI\_Recv}). These actions are repeated $N=10$ times in order to minimize the error due to averaging. Process $0$ measures the time $T$ taken for all these exchanges.
-
-The bandwidth $R$ is determined by formula:
-
-$$R = \frac{2NL}{T}$$
-
-\subsubsection{Latency measurement technique}
-
-Latency is measured as the time it takes to transmit a signal or message of zero 
-length. At the same time, to reduce the influence of the error and low resolution of 
-the system timer, it is important to repeat the operation of sending a signal and 
-receiving a response a large number of times.
-
-Thus, if the time for $N$ iterations of sending zero-length messages back and forth was $T$ sec., Then the latency is 
-measured as:
-
-$$s = \frac{T}{2N}$$
+The function splits the group associated with the parent communicator into non-overlapping subgroups, one 
+for each value of the color subgroup attribute. \textbf{Color} must be non-negative. Each subgroup contains 
+processes with the same color value. The \textbf{key} parameter controls the ordering within the new groups: a 
+lower \textbf{key} value corresponds to a lower process ID value. If the \textbf{key} parameter is equal for multiple 
+processes, the ordering is performed according to the order in the parent group
 
 \subsubsection{Example of launch parameters and output. Detailed description of solution}
 
-Code for \textbf{assignment 6} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment8.c}{here}.
+Code for \textbf{assignment 16} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment16.c}{here}.
 
-Compilation example: \textsc{mpic++ -o ./cpf/8.o Assignment8.c}
+Compilation example: \textsc{mpic++ -o ./cpf/16.o Assignment16.c}
 
-Launch example: \textsc{mpirun --oversubscribe -np 2 ./cpf/8.o}
+Launch example: 
+
+\begin{enumerate}
+	\item \textsc{mpirun --oversubscribe -np 4 ./cpf/16.o 2}
+	\item \textsc{mpirun --oversubscribe -np 4 ./cpf/16.o 3}
+\end{enumerate}
 
 \begin{center}
-\includegraphics[scale=0.75]{8.png}
+\includegraphics[scale=0.55]{16.png}
 \end{center}
 
 Let's move to the the code and explain how it works.
 
-\begin{figure}[h!]
-\centering
-\subfigure{\includegraphics[width=0.47\textwidth]{8.1.code.png}} 
-\subfigure{\includegraphics[width=0.5\textwidth]{8.2.code.png}} 
+\begin{center}
+\includegraphics[scale=0.9]{16.code.png}
 
-Assignment8 code
-\end{figure}
+Assignment16 code
+\end{center}
 
-In the code there are on function \textsc{FactoryMessage}, that start \textsc{MPI\_Send} or \textsc{MPI\_Recv} function depends on input parameter \textit{variant}, after that there are a computation of metrics such as average time in seconds, latency and bandwidth by formulas in previous subsections and printing the result. In main function process $0$ send array of different length on each iteration of for cycle to process $1$, process $1$ then recieves it and send to process $0$ and it is continue for cycle $\operatorname{len}=[1..1000000]$ by increasing it $10$ times in each iteration. 
+This program works clearly - all processes are splitted into groups based on some condition such as $\operatorname{color}=\operatorname{rank} \% 2$ or $\operatorname{color}=\operatorname{rank} \% 3$ and the new rank in group is calculated as $\operatorname{size} - rank$ as a \textsc{rank1} variable with process rank in new group. For example for second run example, with initial $7$ processes they are splitted on three groups: $0: \{0, 3, 6\}, 1: \{1, 4\}, 2: \{3, 5\}$ and new ranks are $0: \{2, 1, 0\}, 1: \{1, 0\}, 2: \{1, 0\}$ as on a screen higher. The program is tested and works correctly.
 
-We can also check if results are more or less correct - I tried to compare latency from \href{https:\//www.intel.com/content/www/us/en/high-performance-computing-fabrics/omni-path-architecture-performance-overview.html}{intel} comparison and it is more or less the same as in our experiement!
+\newpage
+\subsection{Assignment 17. MPI. Data packing. Sending packed data.}
 
-\begin{figure}[h!]
-\centering
-\subfigure{\includegraphics[width=0.6\textwidth]{8.1.lat.png}} 
-\subfigure{\includegraphics[width=0.4\textwidth]{8.latency.png}} 
+\subsubsection{Formulation of the problem}
 
-Experiement by Intel of MPI latency and our - looks similar
-\end{figure}
+Understand the new functions in \textsc{Assignment17.c} and explain program execution.
 
-We have explained the code in assignment 8 and compare the results.
+Display the values of the process number and arrays $a[i]$, $b[i]$, before packing and 
+distribution, and after. See how broadcasting works.
 
+\subsubsection{Example of launch parameters and output. Detailed description of solution}
+
+Code for \textbf{assignment 17} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment17.c}{here}.
+
+Compilation example: \textsc{mpic++ -o ./cpf/17.o Assignment17.c}
+
+Launch example: \textsc{mpirun --oversubscribe -np 4 ./cpf/17.o}
+
+\begin{center}
+\includegraphics[scale=0.55]{17.png}
+\end{center}
+
+Let's move to the the code and explain how it works.
+
+\begin{center}
+\includegraphics[scale=0.9]{17.code.png}
+
+Assignment17 code
+\end{center}
+
+Theare are three new functions in the code:
+\begin{itemize}
+	\item int MPI\_Pack that packs a datatype into contiguous memory(
+	\begin{itemize}
+		\item const void *inbuf - input buffer start (choice)
+		\item int incount - number of input data items (non-negative integer)
+		\item MPI\_Datatype datatype - datatype of each input data item (handle)
+		\item OUT - void *outbuf - output buffer start (choice)
+		\item int outsize - output buffer size, in bytes (non-negative integer)
+		\item IN/OUT int *position - current position in buffer, in bytes (integer)
+		\item MPI\_Comm comm - communicator for packed message (handle)
+	\end{itemize}
+	\item int MPI\_Unpack that unpack a buffer according to a datatype into contiguous memory(
+	\begin{itemize}
+		\item const void *inbuf - input buffer start (choice)
+		\item int insize - size of input buffer, in bytes (integer)
+		\item IN/OUT int *position - current position in buffer, in bytes (integer)
+		\item OUT - void *outbuf - output buffer start (choice)
+		\item int outcount - number of items to be unpacked (integer)
+		\item MPI\_Datatype datatype - datatype of each output data item (handle)
+		\item MPI\_Comm comm - communicator for packed message (handle)
+	\end{itemize}
+	\item \textsc{MPI\_Bcast} broadcasts a message from the main process ($rank=0$) to all other processes of the communicator
+\end{itemize}
+
+Due to this our function works like this - there are initliazation of two arrays, first array $a$ is filled by formula 'current rank + 1' and the other $b$ contains char 'a' if it is root process and 'b' if not. After that i am printing array and if it is root process array $a$ and $b$ due to function \textsc{MPI\_Pack} are packing into one contiguous memory and after packing thia arrays are cast to other processes using \textsc{MPI\_Bcast}. In others processes using \textsc{MPI\_Unpack} function we are unpacking a buffer from process $0$ accodring to datatypeto contigious memory and as we expected the messages in non root processes in arrays $a$ and $b$ are overwritten by root values in this arrays. The proram is explained and works correctly.
 \subsection{Appendix}
-
+ 
 The link to the sourse code which is placed on my \href{https://github.com/aptmess/parallel_algorithms}{github}.
 
 

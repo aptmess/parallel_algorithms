@@ -106,7 +106,7 @@ centertags]{article} % относится к классу article и разме�
 		\LARGE FEDERAL STATE AUTONOMOUS EDUCATIONAL INSTITUTION OF HIGHER EDUCATION \\[0.5cm]
 		\Large ITMO UNIVERSITY \\[3cm]
 		\LARGE Report\\
-		\Large MPI. Assignments $8$ \\
+		\Large MPI. Assignments $20-21$ \\
 		\Large Parallel algorithms for the analysis and synthesis of data \\[4cm]
 
 
@@ -117,7 +117,7 @@ centertags]{article} % относится к классу article и разме�
 		Accepted by\\
 		Petr Andriushchenko
 
-		Deadline: 20.12.21
+		Deadline: 26.12.21
 		\end{flushright}
 
 		\vfill 
@@ -133,86 +133,107 @@ centertags]{article} % относится к классу article и разме�
 
 \section{Assignments}
 
-\subsection{Assignment 8. MPI.  Bandwidth measurement.}
+\subsection{Assignment 20. MPI. Parallel I \/ O. Working with files. Access to data. Buffered reading from a file}
 
 \subsubsection{Formulation of the problem}
 
-\begin{enumerate}
-	\item Write an MPI program in which two processes exchange messages
-	\item Measure the time 
-per exchange iteration
-	\item Determine the dependence of the exchange time on the 
-message length.
-	\item Determine the latency and maximum achievable bandwidth of the 
-communication network.
-	\item Print the message length in bytes and the throughput in 
-MB/s to the console.
-	\item Change the length of the message in a loop starting from $1$ element and increase to $1,000,000$ elements, increasing by $10$ times at each iteration.
-\end{enumerate}
+Understand the new functions in \textsc{Assignment20.c}, complete the program according to the 
+assignment, explain the execution of the program.
 
-\subsubsection{Bandwidth measurement technique}
-
-The following technique is used to measure point-to-point bandwidth. Process $0$ sends a message of length $L$ bytes to process $1$.
-
-$$L = \operatorname{number \ of \ elements} \cdot \operatorname{length \ in \ bytes \ of \  data \ type}$$
-$$L = 100 \cdot \operatorname{sizeof}(int)$$
-
-Process $1$, having received a message from process $0$, sends it a reply message ot the same length. Blocking MPI calls are used (\textsc{MPI\_Send}, \textsc{MPI\_Recv}). These actions are repeated $N=10$ times in order to minimize the error due to averaging. Process $0$ measures the time $T$ taken for all these exchanges.
-
-The bandwidth $R$ is determined by formula:
-
-$$R = \frac{2NL}{T}$$
-
-\subsubsection{Latency measurement technique}
-
-Latency is measured as the time it takes to transmit a signal or message of zero 
-length. At the same time, to reduce the influence of the error and low resolution of 
-the system timer, it is important to repeat the operation of sending a signal and 
-receiving a response a large number of times.
-
-Thus, if the time for $N$ iterations of sending zero-length messages back and forth was $T$ sec., Then the latency is 
-measured as:
-
-$$s = \frac{T}{2N}$$
+Write a function that will create a file \textbf{"file.txt"} with random content (or with specific text). The 
+function must be executed before the program reads the contents of the file. Run the program 
+on one process. Check if the contents of the file are displayed correctly. Add an option that will 
+delete the file on close
 
 \subsubsection{Example of launch parameters and output. Detailed description of solution}
 
-Code for \textbf{assignment 6} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment8.c}{here}.
+Code for \textbf{assignment 20} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment20.c}{here}.
 
-Compilation example: \textsc{mpic++ -o ./cpf/8.o Assignment8.c}
+Compilation example: \textsc{mpic++ -o ./cpf/20.o Assignment20.c}
 
-Launch example: \textsc{mpirun --oversubscribe -np 2 ./cpf/8.o}
+Launch example: 
+
+\begin{itemize}
+	\item \textsc{mpirun --oversubscribe -np 1 ./cpf/20.o} - without delete option
+	\begin{center}
+	\includegraphics[scale=0.5]{20.no.option.png}
+
+	File exists and also their is input
+	\end{center}
+	\item \textsc{mpirun --oversubscribe -np 1 ./cpf/20.o --delete-file} - with delete option
+	\begin{center}
+	\includegraphics[scale=0.45]{20.yes.option.png}
+
+	As we can see the file is deleted.
+	\end{center}
+
+\end{itemize}
+
+
+Let's move to the the code and explain how it works.
 
 \begin{center}
-\includegraphics[scale=0.75]{8.png}
+\includegraphics[scale=0.9]{20.png}
+
+Assignment20 code
+\end{center}
+
+In this lab there are new functions of MPI that works with some I\/O (input and output) operations with files. In lines $19-20$ there is a filename and string which will be filled in file, in line $25-29$ there is a function that open files (\textsc{MPI\_File\_open}), write in file message (\textsc{MPI\_File\_write}) and standard closing \textsc{MPI\_File\_Close}. After that weopen file and read only mode, \textsc{MPI\_File\_set\_view} function changes process’s view of data in file (collective) and in lines $34-39$ while end on the file count the amount of symbols in file. File closing in line $40$, printing the number of read sybmols sum from the file and if there is a option \textsc{--delete-file} there is function to delete file. Program works correctly 
+for each option of running program as we checking it with grep higher. 
+
+\newpage
+
+\subsection{Assignment 21. MPI. Parallel I \/ O. Working with files. Access to data. Collective reading from a file}
+
+\subsubsection{Formulation of the problem}
+
+Understand the new functions in \textsc{Assignment21.c}, complete the program according 
+to the assignment, explain the execution of the program.
+
+Create a file and fill it with bulky text, output the content in parallel. Change the step 
+of reading the contents of the file and the number of characters to be output by each 
+process.
+
+\subsubsection{Example of launch parameters and output. Detailed description of solution}
+
+Code for \textbf{assignment 21} is \href{https:\//github.com/aptmess/parallel_algorithms/blob/master/HT/hw_mpi/Assignment21.c}{here}.
+
+Compilation example: \textsc{mpic++ -o ./cpf/21.o Assignment21.c}
+
+Launch example: 
+
+\begin{center}
+\includegraphics[scale=0.45]{21.content.png}
+
+It is a text in file \textbf{file1.txt}
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.45]{21.run.png}
+
+Run program with $10$ sybmols per process. Let's change amount of sybmols to $30$
+\end{center}
+
+\begin{center}
+\includegraphics[scale=0.45]{21.run2.png}
+
+Amount of sybmols per process is $30$.
 \end{center}
 
 Let's move to the the code and explain how it works.
 
-\begin{figure}[h!]
-\centering
-\subfigure{\includegraphics[width=0.47\textwidth]{8.1.code.png}} 
-\subfigure{\includegraphics[width=0.5\textwidth]{8.2.code.png}} 
+\begin{center}
+\includegraphics[scale=0.9]{21.code.png}
 
-Assignment8 code
-\end{figure}
+Assignment21 code
+\end{center}
 
-In the code there are on function \textsc{FactoryMessage}, that start \textsc{MPI\_Send} or \textsc{MPI\_Recv} function depends on input parameter \textit{variant}, after that there are a computation of metrics such as average time in seconds, latency and bandwidth by formulas in previous subsections and printing the result. In main function process $0$ send array of different length on each iteration of for cycle to process $1$, process $1$ then recieves it and send to process $0$ and it is continue for cycle $\operatorname{len}=[1..1000000]$ by increasing it $10$ times in each iteration. 
-
-We can also check if results are more or less correct - I tried to compare latency from \href{https:\//www.intel.com/content/www/us/en/high-performance-computing-fabrics/omni-path-architecture-performance-overview.html}{intel} comparison and it is more or less the same as in our experiement!
-
-\begin{figure}[h!]
-\centering
-\subfigure{\includegraphics[width=0.6\textwidth]{8.1.lat.png}} 
-\subfigure{\includegraphics[width=0.4\textwidth]{8.latency.png}} 
-
-Experiement by Intel of MPI latency and our - looks similar
-\end{figure}
-
-We have explained the code in assignment 8 and compare the results.
+As we can see our program read file \textbf{file1.txt} in parallel mode by fixed amount of sybmols (i have increased amount of sybmols from $10$ to $30$ as it is shown higher) for each process there is a formula which sybmols each process is reading using function \textsc{MPI\_File\_set\_view} - $[\left(20\cdot\operatorname{rank}\right)\ldots \left( 20 \cdot (\operatorname{rank} + 1) - 1 \right)]$. As we can see program works correctly and we can control with parallel mode the velocity of reading files - it is very common operation in MPI i think. That's all!
 
 \subsection{Appendix}
 
+
+ 
 The link to the sourse code which is placed on my \href{https://github.com/aptmess/parallel_algorithms}{github}.
 
 

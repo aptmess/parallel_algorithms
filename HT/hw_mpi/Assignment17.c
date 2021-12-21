@@ -1,4 +1,30 @@
 #include "mpi.h"
+#include "iostream"
+
+using namespace std;
+
+int print_it(string out, float a[], char b[], int rank)
+{
+	if (rank == 0) cout << out << '\n' << endl;
+	MPI_Barrier(MPI_COMM_WORLD);
+	
+	cout << "process=" << rank << " a = [";
+	for (int i = 0; i < 9; i++) 
+	{
+		cout << a[i] << ' ';
+	}
+	
+	cout << "];";
+	cout << " b = [";
+	
+	for (int i = 0; i < 10; i++) 
+	{
+		cout << b[i] << ' ';
+	}
+	cout << "];" << '\n' << endl; 
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	int size, rank, position, i;
@@ -12,6 +38,11 @@ int main(int argc, char **argv)
 		if (rank == 0) b[i] = 'a';
 		else b[i] = 'b';
 	}
+
+	print_it("before", a, b, rank);
+
+	
+
 	position = 0;
 	if (rank == 0) {
 		MPI_Pack(a, 10, MPI_FLOAT, buf, 100, &position, MPI_COMM_WORLD);
@@ -24,5 +55,9 @@ int main(int argc, char **argv)
 		MPI_Unpack(buf, 100, &position, a, 10, MPI_FLOAT, MPI_COMM_WORLD);
 		MPI_Unpack(buf, 100, &position, b, 10, MPI_CHAR, MPI_COMM_WORLD);
 	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+	print_it("after", a, b, rank);
+
 	MPI_Finalize();
 }
